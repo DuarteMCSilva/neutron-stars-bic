@@ -25,15 +25,11 @@ Created on Fri Dec  4 10:55:06 2020
 import pandas as pd
 import numpy as np
 import time
-#import matplotlib.pyplot as plt
-#import os
-#import h5py
-
 
 #############################$Input#############################
 N = 8  #How many EoS to be generated  (%PAR)
 
-data = pd.read_csv('crust.csv') 
+data = pd.read_csv('../data/crust.csv') 
 
 
 #############################$Organization#############################
