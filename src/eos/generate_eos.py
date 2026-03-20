@@ -29,7 +29,7 @@ import time
 #############################$Input#############################
 N = 8  #How many EoS to be generated  (%PAR)
 
-data = pd.read_csv('../data/crust.csv') 
+data = pd.read_csv('./data/crust.csv')
 
 
 #############################$Organization#############################
@@ -48,15 +48,20 @@ dp = np.append(np.nan,np.diff(df.p))
 cs = np.sqrt(dp/de)
 df['VS'] = cs
 
-#Last row information:
-Last_Row = df.iloc[-1,]
+def get_initial_conditions(df):
+  last_row = df.iloc[-1,]
 
-n0 = Last_Row[0]
-e0 = Last_Row[1]
-p0 = Last_Row[2]
-c0 = Last_Row[3]
+  print("Last Row Information:")
+  print(last_row)
 
+  n0 = last_row['rho']
+  e0 = last_row['e']
+  p0 = last_row['p']
+  c0 = last_row['VS']
 
+  return n0, e0, p0, c0
+
+n0, e0, p0, c0 = get_initial_conditions(df)
 #############################$OneEoS#############################
 
 def One_EoS(crust= df, model_name= 1, quantity = 6, n_tr = 0.15, n_sat=12*0.16, min_c = 0., max_c = 1. ): #%PAR
@@ -84,8 +89,6 @@ def One_EoS(crust= df, model_name= 1, quantity = 6, n_tr = 0.15, n_sat=12*0.16, 
     dataframe['dn'] = np.append(0,np.diff(dataframe['rho']))     #six random values of velocity of sound (not sorted)
 
     return dataframe # Dataframe Columns: {'rho','Velocity of Sound','drho'}
-  
-
 
   def NoCrust_dataframe(): #$RandomPart
     dataframe = nc_dataframe()
@@ -116,10 +119,8 @@ def One_EoS(crust= df, model_name= 1, quantity = 6, n_tr = 0.15, n_sat=12*0.16, 
 
     
     dataframe['e'] = E_points
-    dataframe['p'] = p_points 
+    dataframe['p'] = p_points
     return dataframe
-
-  
 
   dataframe = NoCrust_dataframe()
   
@@ -129,7 +130,7 @@ def One_EoS(crust= df, model_name= 1, quantity = 6, n_tr = 0.15, n_sat=12*0.16, 
   dataframe = dataframe[['rho', 'e', 'p', 'VS']]
 
   crust = crust[:-2]  #Adding the crust (except the last line, which is repeated)
-  dataframe = crust.append(dataframe, ignore_index=True)
+  pd.concat([crust, dataframe], ignore_index=True)
 
   dataframe = dataframe.drop_duplicates(subset=['rho'])
   dataframe = dataframe.drop_duplicates(subset=['e'])
@@ -146,7 +147,7 @@ DATAFRAME = pd.DataFrame()
 #############################$Execution#############################
 for i in range(N):  
   i_EoS = One_EoS(crust = df, model_name = i, quantity = 6, n_tr  = 0.15 , n_sat =12*0.16, min_c = 0.02, max_c = 0.98)  #%PAR
-  DATAFRAME = DATAFRAME.append(i_EoS , ignore_index=True)
+  DATAFRAME = pd.concat([DATAFRAME, i_EoS], ignore_index=True)
   if i%37==0: 
     print(i)
 
