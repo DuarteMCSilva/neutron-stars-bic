@@ -24,9 +24,9 @@ Created on Fri Dec  4 10:55:06 2020
 #############################$Import#############################
 import pandas as pd
 import numpy as np
-import time
 
-from eos_factory import EquationOfStateFactory
+import utils.date_utils as date_utils
+from eos.eos_factory import EquationOfStateFactory
 
 #############################$Input#############################
 n = 8  #How many EoS to be generated  (%PAR)
@@ -65,7 +65,7 @@ n0, e0, p0, c0 = get_crust_boundary_conditions(df)
 #############################$Execution#############################
 dataset = pd.DataFrame()
 eos_factory = EquationOfStateFactory(n0, e0, p0, c0, state_transitions_nr = 6)
-#############################$Execution#############################
+
 for i in range(n):
   i_EoS = eos_factory.generate(df, i) # $OneEoS
   dataset = pd.concat([dataset, i_EoS], ignore_index=True)
@@ -73,9 +73,9 @@ for i in range(n):
     print(i)
 
 #############################$Saving#############################
-Default_name = str(time.gmtime().tm_year)+ str(time.gmtime().tm_mon) + str(time.gmtime().tm_mday)+ str(time.gmtime().tm_hour) + str(time.gmtime().tm_min) + str(time.gmtime().tm_sec )+ str('.csv')
-
+file_name = date_utils.get_current_date_string() + str('.csv')
+target_dir = str("./data/output_eos/")
 if should_create_file == True:
-  dataset.to_csv(Default_name, sep=" ", index= False)
+  dataset.to_csv(target_dir + file_name, sep=" ", index= False)
 
-  print("saved to the file: ", Default_name)
+  print("saved to the file: ", file_name)
