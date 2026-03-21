@@ -10,3 +10,14 @@ Because neutron stars subject matter to extreme pressures and temperatures unatt
 <img width="946" height="342" alt="image" src="https://github.com/user-attachments/assets/16664d8d-7ac4-4298-aee7-886f25afc735" />
 
 Source: Astromaterial Science and Nuclear Pasta, M. E. Caplan, C. J. Horowitz
+
+
+## Running locally
+
+### Environment
+
+- Create python virtual environment:  `python -m venv .venv`
+
+- Activate environment: `.venv\Scripts\activate.bat`
+
+- Install requirements: `pip install -r requirements.txt`
