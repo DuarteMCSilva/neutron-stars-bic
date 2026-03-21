@@ -36,8 +36,7 @@ import utils.date_utils as date_utils
 import os
 import pandas as pd
 
-from multiprocess import Pool # %OBS: There is a similar library called "multiprocessing", 
-                                  # might be an option too but exibits some errors which "multiprocess" does not.
+import utils.parallelization as parallelization
 
 #############################$Input#############################
 n_cores = 1 #%PAR
@@ -83,15 +82,9 @@ def Paralelize(DataFrame, ncores):
         return solver.solve(EOS)
     
     EOS_array = EOS_array(DataFrame)
-    Total_DataFrame = []
-    
-    if(ncores == 1):
-        for EOS in EOS_array:
-            Total_DataFrame.append(Solve_for_EOS(EOS))
-    else:
-        Total_DataFrame = Pool(ncores).map(Solve_for_EOS, EOS_array)   #Vetor de Dataframes
-    
-    return Total_DataFrame 
+
+    results = parallelization.Parallelization(n_cores).run(Solve_for_EOS, EOS_array)
+    return results
 
 
 #############################$Execution#############################
