@@ -25,8 +25,6 @@ Created on Tue Sep  1 18:46:03 2020
             -%NOR - Normalization
     '''
 
-
-
 #############################$Import#############################
 import numpy as np
 import matplotlib.pyplot as plt 
@@ -37,15 +35,15 @@ import pandas as pd
 from scipy.interpolate import InterpolatedUnivariateSpline as IUS
 import scipy.integrate as integrate
 
+from multiprocess import Pool # %OBS: There is a similar library called "multiprocessing", 
+                                  # might be an option too but exibits some errors which "multiprocess" does not.
+
 #############################$Input#############################
-n_cores = 4 #%PAR
-data_dir = os.path.join('/home/duarte/Dropbox/Apps/NONIO-Inforestudante/Mestrado em Física/2019 2020/2.º Semestre/BIC/02 - Ficheiros Finais',
-                        "2020124112153.csv")
+n_cores = 1 #%PAR
+data_dir = os.path.join('./data/output_eos/2026-03-21_16-52-25.csv')
 
 #Depends on the data structure
 data = pd.read_csv(data_dir, sep = " ")
-
-
 
 #############################$Restrictions#############################
 
@@ -207,13 +205,16 @@ def Paralelize(DataFrame, ncores):
         return TOV_solver_wTD_wroot(EOS_data = EOS, N_stars = 80, rho0 = 0.05, rmin = 1.e-8 #%PAR
                                     ,rmax=20., dr = 1.e-3,  int_method = 'LSODA')
 
-    from multiprocess import Pool # %OBS: There is a similar library called "multiprocessing", 
-                                  # might be an option too but exibits some errors which "multiprocess" does not.
+    
     
     EOS_array = EOS_array(DataFrame)
     
-        
-    Total_DataFrame = Pool(ncores).map(Solve_for_EOS, EOS_array)   #Vetor de Dataframes
+    if(ncores == 1):
+        Total_DataFrame = []
+        for EOS in EOS_array:
+            Total_DataFrame.append(Solve_for_EOS(EOS))
+    else:
+        Total_DataFrame = Pool(ncores).map(Solve_for_EOS, EOS_array)   #Vetor de Dataframes
     
     return Total_DataFrame 
 
