@@ -49,4 +49,3 @@ The $M_{chirp}$ of a two-body system can be expressed as:  $M_{chirp} = \frac{(m
 - Activate environment: `.venv\Scripts\activate.bat`
 
 - Install requirements: `pip install -r requirements.txt`
-
