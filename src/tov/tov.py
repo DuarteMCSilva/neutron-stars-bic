@@ -275,7 +275,7 @@ plt.show()
 
 #############################$Saving#############################
 Final_dataframe = pd.DataFrame()
-Final_dataframe = Final_dataframe.append(VDF, ignore_index=True)
+Final_dataframe = pd.concat(VDF, ignore_index=True)
 
 Create_new_file = True #%PAR
 Default_name = str('R_M_L_') + str(time.gmtime().tm_year)+ str(time.gmtime().tm_mon) + str(time.gmtime().tm_mday)+ str(time.gmtime().tm_hour) + str(time.gmtime().tm_min) + str(time.gmtime().tm_sec )+ str('.csv')
