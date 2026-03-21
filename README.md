@@ -26,3 +26,27 @@ The $M_{chirp}$ of a two-body system can be expressed as:  $M_{chirp} = \frac{(m
 <p align="center">
     <img alt="image" src="output/machine_learning/Radius,M_chirp,Lambda.png"/>
 </p>
+
+## Solving TOV Equation from a Neutron Star EoS
+
+### Mass-radius relation of a neutron star
+<p align="center">
+    <img src="data/output_img/M(R).png"/>
+</p>
+
+### Lambda-mass relation of a neutron star
+<p align="center">
+    <img src="data/output_img/Lambda(M).png"/>
+</p>
+
+
+## Running locally
+
+### Environment
+
+- Create python virtual environment:  `python -m venv .venv`
+
+- Activate environment: `.venv\Scripts\activate.bat`
+
+- Install requirements: `pip install -r requirements.txt`
+
