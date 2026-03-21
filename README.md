@@ -49,3 +49,8 @@ The $M_{chirp}$ of a two-body system can be expressed as:  $M_{chirp} = \frac{(m
 - Activate environment: `.venv\Scripts\activate.bat`
 
 - Install requirements: `pip install -r requirements.txt`
+
+## Output
+
+![](data/output_img/M(R).png "Mass-radius relation of a neutron star")
+![](data/output_img/Lambda(M).png "Lambda-mass relation of a neutron star")
