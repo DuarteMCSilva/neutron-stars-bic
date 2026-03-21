@@ -29,24 +29,24 @@ import utils.date_utils as date_utils
 from eos.eos_factory import EquationOfStateFactory
 
 #############################$Input#############################
-n = 8  #How many EoS to be generated  (%PAR)
+n = 1  #How many EoS to be generated  (%PAR)
 should_create_file = True
 
+crust_boundary_rho = 0.15 #Density at the crust-core boundary (%PAR)
 data = pd.read_csv('./data/crust.csv')
 
 #############################$Organization#############################
 df = pd.DataFrame(data)
-df = df.loc[(df['n']<= 0.15)] #%PAR
+df = df.loc[(df['n']<= crust_boundary_rho)] #%PAR 
 
 keys = data.keys()
-df = df.rename( {keys[0]: "rho" }, axis = 1) 
+df = df.rename( {keys[0]: "rho" }, axis = 1)
 
 
 #Insert a column for the Velocity of Sound
 de = np.append(np.nan,np.diff(df.e))
 dp = np.append(np.nan,np.diff(df.p))
-cs = np.sqrt(dp/de)
-df['VS'] = cs
+df['VS'] = np.sqrt(dp/de)
 
 def get_crust_boundary_conditions(df):
   last_row = df.iloc[-1,]
