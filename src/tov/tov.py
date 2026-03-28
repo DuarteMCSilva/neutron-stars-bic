@@ -40,7 +40,7 @@ import utils.parallelization as parallelization
 
 #############################$Input#############################
 n_cores = 1 #%PAR
-data_dir = os.path.join('./data/output_eos/2026-03-21_20-18-06.csv')
+data_dir = os.path.join('./data/generated_eos/2026-03-21_20-18-06.csv')
 
 #Depends on the data structure
 data = pd.read_csv(data_dir, sep = " ")

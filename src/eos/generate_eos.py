@@ -73,7 +73,7 @@ def generate_eos_files(n, should_create_file):
 
   #############################$Saving#############################
   file_name = date_utils.get_current_date_string() + str('.csv')
-  target_dir = str("./data/output_eos/")
+  target_dir = str("./data/generated_eos/")
   if should_create_file == True:
     dataset.to_csv(target_dir + file_name, sep=" ", index= False)
 

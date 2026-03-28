@@ -25,4 +25,4 @@ plots.plot_mass_lambda(ax[1], eos_groups, min_mass=MIN_MASS)
 #ax[1].tick_params(labelleft=False)  # hide y tick labels
 ax[1].set_ylabel("")               # remove duplicate label
 plt.show()
-fig.savefig('data/output_img/M(R)_and_Lambda(M).png')
+fig.savefig('output/tov_calculations/M(R)_and_Lambda(M).png')
