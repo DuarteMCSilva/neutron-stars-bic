@@ -1,11 +1,12 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Sep 29 18:23:33 2019
+Created on Sun Mar  1 13:37:49 2020
 
 @author: duarte
 """
-SEED = 123
+
+SEED = 127
 import time
 start_time = time.time()
 import os
@@ -20,23 +21,29 @@ from random import sample
 from sklearn import preprocessing
 
 
+def NORMALIZE(array,mean,std):
+    return (array - mean)/std
+def UNNORMALIZE(normalized_array,mean,std):
+    return normalized_array * std + mean
+
+
 random.seed(SEED)
 
-data_dir = os.path.join('./data/binary-systems.csv')
+data_dir = os.path.join("") #< -----------
 data = pd.read_csv(data_dir)
 df =  pd.DataFrame(data)
+df =  df.dropna()
 
 
 
-X = df.loc[ : ,"K_sat":"Q_sym"]
-Y = df.loc[ : ,"Lambda14"]
+X = df.loc[ : , ["M_chirp","q","Lambda_tilda"]]
+Y = df.loc[ : , "R1":"Lambda2"]
 
 ## Divide data into 75% train, 25% test
 from sklearn.model_selection import train_test_split
-X_train, X_test, Y_train, Y_test= train_test_split(X,Y,
-                                                   test_size=0.25,
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y,
+                                                   test_size=0.25,  #<------
                                                    random_state=1)
-
 ########################################################
 #################NORMALIZE DATA#########################
 ########################################################
@@ -61,19 +68,26 @@ std_df.to_csv('std.csv')
 ####################SPLIT DATA########################
 ######################INTO############################
 #################TRAIN/VALIDATION#####################
-X_train, X_val, Y_train, Y_val = train_test_split(X_train_scaled, Y_train_scaled,
+X_train_sample, X_val, Y_train_sample, Y_val = train_test_split(X_train_scaled, Y_train_scaled,
                                                   test_size=0.2,random_state=1)
-####################SHUFFLE###########################
-X_train = np.array(X_train_scaled)
-Y_train = np.array(Y_train_scaled)
 
-X_test = np.array(X_test_scaled) 
+X_val = np.array(X_val)
+Y_val = np.array(Y_val)
+####################SHUFFLE###########################
+X_train = np.array(X_train_sample)
+Y_train = np.array(Y_train_sample)
+#
+X_test = np.array(X_test_scaled)
 Y_test = np.array(Y_test_scaled)
 
 ind = np.random.permutation(len(X_train))
+ind2 = np.random.permutation(len(X_test))
 
 X_train = np.take(X_train, ind, axis=0)
-Y_train = np.take(Y_train, ind)
+Y_train = np.take(Y_train, ind, axis=0)
+
+X_test  = np.take(X_test, ind2, axis=0)
+Y_test  = np.take(Y_test, ind2, axis=0)
 
 
 ####################IMPORTS###########################
@@ -99,12 +113,12 @@ for Ai in lista:
     #################MODEL STRUCTURE########################
     ########################################################
     model = Sequential()
-    model.add(Dense(32,activation=Ai, input_shape=[X_train.shape[1]]))
-    model.add(Dropout(0.0))
-    model.add(Dense(32,activation=Ai))
-    model.add(Dropout(0.0))
-    model.add(Dense(64, activation=Ai))
-    model.add(Dense(1))
+    model.add(Dense(16,activation=Ai, input_shape=[X_train.shape[1]]))
+    model.add(Dropout(0))
+    model.add(Dense(64,activation=Ai))
+#    model.add(Dropout(0))
+    model.add(Dense(32, activation=A3))
+    model.add(Dense(6))
     
     ########################################################
     ########################################################
@@ -112,25 +126,26 @@ for Ai in lista:
     
     model.compile(opt, loss ="mse", metrics =["accuracy"])
     
-    epocas = 5
+    epocas = 1000                                   #<------------------------
     history = model.fit(X_train, Y_train,
               epochs=epocas, batch_size=64,
               validation_data= (X_val,Y_val))
     
-    y_predicted = np.array(model.predict(X_test))
+
     ########################################################
     ########################################################
     
     loss_train = history.history['loss']
     loss_val = history.history['val_loss']#*sd_Y_train**2
+    print(loss_train)
     
     ########################################################
     ################SAVE MODEL and WEIGHTS##################
     ########################################################
     #Here I'm saving the model to a .json file (?) and the #
     ##########weights of the model on a .h5 file############
-    json_model_name = str(Ai) + "_model1.json"
-    hdf5_model_name = str(Ai) + "_model1.h5"
+    json_model_name = str(Ai) + "_model50q1.json"
+    hdf5_model_name = str(Ai) + "_model50q1.h5"
     
 
     s= "mse:" + str(round(loss_train[-1],5))
@@ -143,28 +158,58 @@ for Ai in lista:
     
     ########################################################
     ##################PLOT AND SAVE JPG#####################
-    ########################################################
+    ########################################################    
     
-    plt.plot(np.array(loss_train)*sd_Y_train)
-    plt.plot(np.array(loss_val)*sd_Y_train)
-    plt.text(epocas*0.75-1, round(loss_train[0] * 0.8,4) , s )
-    plt.text(epocas*0.75-1, round(loss_train[0] * 0.5,4) , 'lr = 0.001')
-    plt.text(epocas*0.75-1, round(loss_train[0] * 0.3,4) , Ai)
-    plt.ylabel('loss function (mse) ')
-    #plt.plot(history.history['val_loss'])
-    #plt.title('model loss')
-    #plt.ylabel('loss')
+    plt.plot(loss_train)
+    plt.plot(loss_val)
     plt.yscale('log')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    
-    file_name = str(epocas) + " epoch "+ str(Ai) + "0.jpg" 
+    file_name = str(epocas) + " epoch5 "+ str(Ai) + ".jpg" 
     plt.savefig(file_name)
     plt.show()
+    
+    plt.plot(loss_train)
+    plt.plot(loss_val)
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    file_name = str(epocas) + " epoch5 "+ str(Ai) + ".jpg" 
+    plt.savefig(file_name)
+    plt.show()
+    
+    
+    plt.plot(history.history['accuracy'])
+    plt.show()
+    
     #########################################################
-
+    
+    Y_predicted = np.array(model.predict(X_test))
+    
+    
+    mean_Y_train = np.array(mean_Y_train)
+    sd_Y_train   = np.array(  sd_Y_train)
+    
+    y_predicted = UNNORMALIZE(Y_predicted, mean_Y_train, sd_Y_train )
+    Y_test      = UNNORMALIZE(Y_test     , mean_Y_train, sd_Y_train )
+    diferença = (y_predicted - Y_test)**2
+    diferença = diferença.T
+    
+    MSE = []
+    
+    for i in range (6):
+        MSE.append(np.mean(diferença[i]))
+        
+    MD = np.sqrt(MSE)
+    
+    print(MD)
+    
+#    UNNORMALIZE(MSE, mean_Y_train*0, sd_Y_train )
+        
+    
+    
+    
+    
 time_elapsed = time.time()-start_time
 
 print ('Time Elapsed: ', time_elapsed)
 #history_dict.keys()
-
