@@ -44,3 +44,8 @@ Mass-radius relation and lambda-mass relation of a neutron star
 - Activate environment: `.venv\Scripts\activate.bat`
 
 - Install requirements: `pip install -r requirements.txt`
+
+# References
+- [arXiv:1910.05554](https://arxiv.org/pdf/1910.05554): Unveiling the nuclear matter EoS from neutron star properties: a supervised machine learning approach
+- [arXiv:1805.00837](https://arxiv.org/abs/1805.00837): A short walk through the physics of neutron stars
+- [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)
