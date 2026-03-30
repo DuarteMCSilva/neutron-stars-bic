@@ -15,12 +15,10 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from keras.models import Sequential
-from keras import optimizers, Input
-from keras.layers import Dense, Dropout #, Conv1D, MaxPool1D, Flatten, SpatialDropout1D
 from sklearn.model_selection import train_test_split
 
 import utils.normalization as norm
+import machine_learning.model as ml
 
 
 random.seed(SEED)
@@ -45,11 +43,10 @@ X_train, X_test, Y_train, Y_test= train_test_split(X,Y,
 #################NORMALIZE DATA#########################
 ########################################################
 
-mean_df = pd.DataFrame(X_train.mean())
-std_df  = pd.DataFrame(X_train.std())
-
-mean_df.to_csv(OUTPUT_PATH + 'mean.csv')
-std_df.to_csv(OUTPUT_PATH + 'std.csv')
+mean_df = pd.DataFrame({
+    'mean': X_train.mean(axis=0),
+    'std': X_train.std(axis=0)
+})
 
 sd_Y_train = Y_train.std()
 
@@ -69,26 +66,13 @@ A2='sigmoid'
 A3='tanh'
 A1='softmax'
 lista=[A4]
-#lista = [A1,A2,A3,A4]
+
 for activation_function in lista:
-    
     ########################################################
     #################MODEL STRUCTURE########################
     ########################################################
-    model = Sequential()
-    model.add(Input(shape=(X_train.shape[1],)))
-    model.add(Dense(32,activation=activation_function))
-    model.add(Dropout(0.0))
-    model.add(Dense(32,activation=activation_function))
-    model.add(Dropout(0.0))
-    model.add(Dense(64, activation=activation_function))
-    model.add(Dense(1))
-    
-    ########################################################
-    ########################################################
-    opt = optimizers.Adam(learning_rate=0.001)
-    
-    model.compile(opt, loss ="mse", metrics =["accuracy"])
+    model = ml.build_model(X_train, activation_function)
+    model_path = MODELS_PATH + activation_function + "/"
     
     epocas = 50
     history = model.fit(X_train, Y_train,
@@ -107,17 +91,18 @@ for activation_function in lista:
     ########################################################
     #Here I'm saving the model to a .json file (?) and the #
     ##########weights of the model on a .h5 file############
-    json_model_name = MODELS_PATH + activation_function + "/model.json"
-    hdf5_model_name = MODELS_PATH + activation_function + "/model.weights.h5"
+    json_path = model_path + "model.json"
+    h5_path = model_path + "model.weights.h5"
     
 
     s= "mse:" + str(round(loss_train[-1],5))
     
     model_json = model.to_json()
-    with open(json_model_name, "w") as json_file:
+    with open(json_path, "w") as json_file:
         json_file.write(model_json)
-    model.save_weights(hdf5_model_name)
-    print("Saved ", json_model_name, " to disk")
+    model.save_weights(h5_path)
+    mean_df.to_csv(model_path + 'training-distribution.csv')
+    print("Saved ", json_path, " to disk")
     
     ########################################################
     ##################PLOT AND SAVE JPG#####################
@@ -137,7 +122,7 @@ for activation_function in lista:
     plt.legend(['train', 'test'], loc='upper left')
     
     file_name = str(epocas) + "_epoch" + ".jpg" 
-    plt.savefig(MODELS_PATH + activation_function + "/" + file_name)
+    plt.savefig(model_path + file_name)
     plt.show()
     #########################################################
 
