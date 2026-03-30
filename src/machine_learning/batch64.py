@@ -16,8 +16,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-from random import sample
-from sklearn import preprocessing
+import utils.normalization as norm
 
 
 random.seed(SEED)
@@ -40,52 +39,25 @@ X_train, X_test, Y_train, Y_test= train_test_split(X,Y,
 ########################################################
 #################NORMALIZE DATA#########################
 ########################################################
-mean_X_train = X_train.mean()
-mean_Y_train = Y_train.mean()
 
-sd_X_train = X_train.std()
+mean_df = pd.DataFrame(X_train.mean())
+std_df  = pd.DataFrame(X_train.std())
+
+mean_df.to_csv(OUTPUT_PATH + 'mean.csv')
+std_df.to_csv(OUTPUT_PATH + 'std.csv')
+
 sd_Y_train = Y_train.std()
 
-X_train_scaled = (X_train - mean_X_train)/sd_X_train
-Y_train_scaled = (Y_train - mean_Y_train)/sd_Y_train
-X_test_scaled  = (X_test  - mean_X_train)/sd_X_train
-Y_test_scaled  = (Y_test  - mean_Y_train)/sd_Y_train
-###############SAVE NORMAL. CONSTANTS#################
-
-mean_df = pd.DataFrame(mean_X_train)
-std_df  = pd.DataFrame(sd_X_train)
-
-mean_df.to_csv('mean.csv')
-std_df.to_csv('std.csv')
+X_train_scaled = norm.normalize(X_train)
+Y_train_scaled = norm.normalize(Y_train)
+X_test_scaled  = norm.normalizeWithReference(X_test, X_train)
+Y_test_scaled  = norm.normalizeWithReference(Y_test, Y_train)
 
 ####################SPLIT DATA########################
 ######################INTO############################
 #################TRAIN/VALIDATION#####################
 X_train, X_val, Y_train, Y_val = train_test_split(X_train_scaled, Y_train_scaled,
                                                   test_size=0.2,random_state=1)
-####################SHUFFLE###########################
-X_train = np.array(X_train_scaled)
-Y_train = np.array(Y_train_scaled)
-
-X_test = np.array(X_test_scaled) 
-Y_test = np.array(Y_test_scaled)
-
-ind = np.random.permutation(len(X_train))
-
-X_train = np.take(X_train, ind, axis=0)
-Y_train = np.take(Y_train, ind)
-
-
-####################IMPORTS###########################
-from keras.models import Sequential,model_from_json
-from keras import optimizers
-from keras.layers import Dense, Dropout #, Conv1D, MaxPool1D, Flatten, SpatialDropout1D
-from sklearn.preprocessing import LabelEncoder
-#from sklearn.preprocessing import OneHotEncoder
-from sklearn import preprocessing
-from sklearn.metrics import confusion_matrix
-
-from IPython.display import clear_output
 ######################################################
 A4='relu'
 A2='sigmoid'
@@ -166,5 +138,3 @@ for Ai in lista:
 time_elapsed = time.time()-start_time
 
 print ('Time Elapsed: ', time_elapsed)
-#history_dict.keys()
-
