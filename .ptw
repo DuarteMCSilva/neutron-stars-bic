@@ -1,0 +1,5 @@
+[pytest-watch]
+ext = py
+clear = True
+verbose = True
+spool = 300

@@ -3,3 +3,7 @@ matplotlib
 pandas
 scipy
 multiprocess
+scikit-learn
+tensorflow
+keras
+pytest-watch

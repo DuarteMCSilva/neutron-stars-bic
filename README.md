@@ -44,3 +44,11 @@ Mass-radius relation and lambda-mass relation of a neutron star
 - Activate environment: `.venv\Scripts\activate.bat`
 
 - Install requirements: `pip install -r requirements.txt`
+
+- Run `python src/main.py`
+
+### Run Tests
+ - Watch mode: `ptw`
+ - Problems finding tests: `pytest --collect-only`
+  
+  More: https://www.timsanteford.com/posts/automatically-rerun-pytest-tests-on-file-save/
